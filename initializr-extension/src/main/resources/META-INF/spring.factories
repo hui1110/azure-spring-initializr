@@ -3,4 +3,7 @@ com.azure.spring.initializr.autoconfigure.ExtendInitializrAutoConfiguration
 
 
 io.spring.initializr.generator.project.ProjectGenerationConfiguration=\
-com.azure.spring.initializr.autoconfigure.ExtendDependencyProjectGenerationConfiguration
+com.azure.spring.initializr.autoconfigure.ExtendDependencyProjectGenerationConfiguration,\
+com.azure.spring.initializr.generator.AzureGenerationConfiguration,\
+com.azure.spring.initializr.generator.GithubworkflowGenerationConfiguration
+
