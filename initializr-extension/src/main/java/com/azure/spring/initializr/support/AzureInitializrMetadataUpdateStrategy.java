@@ -39,15 +39,15 @@ public class AzureInitializrMetadataUpdateStrategy extends SaganInitializrMetada
 
     @Override
     public InitializrMetadata update(InitializrMetadata current) {
-//        String url = current.getConfiguration().getEnv().getSpringBootMetadataUrl();
-//        List<DefaultMetadataElement> bootVersions = fetchSpringBootVersions(url);
-//        if (bootVersions != null && !bootVersions.isEmpty()) {
-//            if (bootVersions.stream().noneMatch(DefaultMetadataElement::isDefault)) {
-//                // No default specified
-//                bootVersions.get(0).setDefault(true);
-//            }
-//            current.updateSpringBootVersions(bootVersions);
-//        }
+        String url = current.getConfiguration().getEnv().getSpringBootMetadataUrl();
+        List<DefaultMetadataElement> bootVersions = fetchSpringBootVersions(url);
+        if (bootVersions != null && !bootVersions.isEmpty()) {
+            if (bootVersions.stream().noneMatch(DefaultMetadataElement::isDefault)) {
+                // No default specified
+                bootVersions.get(0).setDefault(true);
+            }
+            current.updateSpringBootVersions(bootVersions);
+        }
         return current;
     }
 
