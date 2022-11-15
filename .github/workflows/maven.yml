@@ -30,7 +30,7 @@ jobs:
     concurrency: staging_environment
     env:
       AZURE_SUBSCRIPTION: 799c12ba-353c-44a1-883d-84808ebb2216
-      AZURE_SPRING_APPS: spring-initializr-jimmy-repo
+      AZURE_SPRING_APPS: spring-initializr
       AZURE_SPRING_APPS_APP: spring-initializr-jimmy-repo
     if: ${{ github.repository == 'fangjian0423/azure-spring-initializr' && github.event_name != 'pull_request' }}
     steps:
