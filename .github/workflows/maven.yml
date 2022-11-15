@@ -22,7 +22,7 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven
-      run: mvn -B clean package --file pom.xml -P full -DskipTests
+      run: mvn -B clean package --file pom.xml -DskipTests
   deploy_to_production:
     needs: [ build ]
     runs-on: ubuntu-latest
