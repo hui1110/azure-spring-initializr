@@ -30,9 +30,9 @@ jobs:
     concurrency: staging_environment
     env:
       AZURE_SUBSCRIPTION: 799c12ba-353c-44a1-883d-84808ebb2216
-      AZURE_SPRING_APPS: spring-initializr
-      AZURE_SPRING_APPS_APP: spring-initializr
-    if: ${{ github.repository == 'Azure/azure-spring-initializr' && github.event_name != 'pull_request' }}
+      AZURE_SPRING_APPS: spring-initializr-jimmy-repo
+      AZURE_SPRING_APPS_APP: spring-initializr-jimmy-repo
+    if: ${{ github.repository == 'fangjian0423/azure-spring-initializr' && github.event_name != 'pull_request' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -63,8 +63,8 @@ jobs:
     needs: [ build ]
     runs-on: ubuntu-latest
     env:
-      DOCKER_IMAGE_NAME: 'ghcr.io/azure/spring/spring-initializr'
-    if: ${{ github.repository == 'Azure/azure-spring-initializr' && github.event_name != 'pull_request' }}
+      DOCKER_IMAGE_NAME: 'ghcr.io/fangjian0423/spring/spring-initializr'
+    if: ${{ github.repository == 'fangjian0423/azure-spring-initializr' && github.event_name != 'pull_request' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -84,4 +84,4 @@ jobs:
         working-directory: ${{ github.workspace }}/start-site
       - name: Push to GitHub Packages
         run: docker push ${{ env.DOCKER_IMAGE_NAME }}:main
-        if: ${{ github.repository == 'Azure/azure-spring-initializr' && github.event_name != 'pull_request' }}
+        if: ${{ github.repository == 'fangjian0423/azure-spring-initializr' && github.event_name != 'pull_request' }}
