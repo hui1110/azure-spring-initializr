@@ -5,9 +5,9 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, github-push ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, github-push ]
   workflow_dispatch:
 
 jobs:
@@ -58,6 +58,10 @@ jobs:
           app-name: ${{ env.AZURE_SPRING_APPS_APP }}
           use-staging-deployment: false
           package: ${{ github.workspace }}/start-site/target/start-site-exec.jar
+          environment-variables: >
+            -extend.initializr.gitpush.oauthapps.github.clientid ${{ secrets.GH_OAUTH_CLIENTID }} 
+            -extend.initializr.gitpush.oauthapps.github.clientSecret ${{ secrets.GH_OAUTH_CLIENTSECRET }} 
+            -extend.initializr.gitpush.oauthapps.github.redirectUri ${{ secrets.GH_OAUTH_REDIRECTURI }}
   build_java_docker_image:
     name: Build and publish a JVM-based Docker image
     needs: [ build ]
