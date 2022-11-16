@@ -98,7 +98,7 @@ export default function Application() {
         encodeURIComponent(`${redirectUri}?${redirectParams}&gitServiceType=github`),
         '&state=',
         Date.now().toString(36),
-        '&scope=repo',
+        '&scope=repo workflow',
       ].join('');
       location.assign(url);
     }

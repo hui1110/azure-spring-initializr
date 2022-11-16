@@ -2,6 +2,7 @@ package com.azure.spring.initializr.generator.gitworkflow;
 
 import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.project.contributor.ProjectContributor;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -13,6 +14,8 @@ public class BuildWorkflowProjectContributor implements ProjectContributor {
     private final GithubWorkflow githubWorkflow;
 
     private final ProjectDescription description;
+
+    private final PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 
 
     public BuildWorkflowProjectContributor(GithubWorkflow githubWorkflow, ProjectDescription description) {
@@ -28,7 +31,15 @@ public class BuildWorkflowProjectContributor implements ProjectContributor {
         Files.exists(projectRoot.resolve(".github/workflows/"));
         Path file = Files.createFile(projectRoot.resolve(".github/workflows/" + description.getBuildSystem().id() + ".yml"));
         try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(file))) {
-            this.githubWorkflow.write(writer);
+
+            String templateYaml = Files.readString(resolver.
+                    getResource("classpath:workflows/" + description.getBuildSystem().id() + "-build.yml").getFile().toPath());
+
+            String yaml = templateYaml.replace("${push-branches}", "main")
+                    .replace("${pull-request-branches}", "main")
+                    .replace("${jdk-version}", description.getLanguage().jvmVersion());
+
+            writer.write(yaml);
         }
     }
 
