@@ -12,6 +12,7 @@ public class ExtendProjectRequest extends WebProjectRequest {
     private List<String> samples = new ArrayList<>();
     private String code;
     private String gitServiceType;
+    private String action;
 
     public String getArchitecture() {
         return architecture;
@@ -43,5 +44,13 @@ public class ExtendProjectRequest extends WebProjectRequest {
 
     public void setGitServiceType(String gitServiceType) {
         this.gitServiceType = gitServiceType;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
     }
 }

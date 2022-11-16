@@ -34,4 +34,10 @@ public interface GitRestClient {
      */
     boolean repositoryExists(User user, ExtendProjectRequest request);
 
+    String getRepositoryId(User user, ExtendProjectRequest request);
+
+    default String createCodespaces(User user, ExtendProjectRequest request) {
+        return null;
+    }
+
 }

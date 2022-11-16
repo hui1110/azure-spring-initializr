@@ -18,6 +18,7 @@ import { IconGithub } from '../icons'
 const Fields = ({
   onSubmit,
   onPush,
+  onCoding,
   onExplore,
   onShare,
   refExplore,
@@ -217,6 +218,16 @@ const Fields = ({
             Push to GitHub
             <span style={{ float: 'right', width: '22px', height: '22px', margin:'-4px 0 0 0', padding:'0 0 0 6px' }}><IconGithub /></span>
           </Button>
+        ) : null}
+        {get(git, 'github.enabled') === true ? (
+            <Button
+                id='coding-on-github'
+                onClick={onCoding}
+                disabled={generating}
+            >
+              Coding on Github
+              <span style={{ float: 'right', width: '22px', height: '22px', margin:'-4px 0 0 0', padding:'0 0 0 6px' }}><IconGithub /></span>
+            </Button>
         ) : null}
       </Actions>
     </>

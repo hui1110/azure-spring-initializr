@@ -95,10 +95,28 @@ export default function Application() {
         '?client_id=',
         clientId,
         '&redirect_uri=',
-        encodeURIComponent(`${redirectUri}?${redirectParams}&gitServiceType=github`),
+        encodeURIComponent(`${redirectUri}?${redirectParams}&gitServiceType=github&action=push`),
         '&state=',
         Date.now().toString(36),
-        '&scope=repo workflow',
+        '&scope=repo workflow codespace',
+      ].join('');
+      location.assign(url);
+    }
+  }
+
+  const onCoding = async (e) => {
+    let { enabled, clientId, oauthUri, redirectUri } = get(git, 'github', {});
+    const redirectParams = getGitParams(values, get(dependencies, 'list'));
+    if (enabled) {
+      const url = [
+        oauthUri,
+        '?client_id=',
+        clientId,
+        '&redirect_uri=',
+        encodeURIComponent(`${redirectUri}?${redirectParams}&gitServiceType=github&action=codespaces`),
+        '&state=',
+        Date.now().toString(36),
+        '&scope=repo workflow codespace',
       ].join('');
       location.assign(url);
     }
@@ -165,6 +183,7 @@ export default function Application() {
               <Fields
                 onSubmit={onSubmit}
                 onPush={onPush}
+                onCoding={onCoding}
                 onShare={onShare}
                 onExplore={onExplore}
                 refExplore={buttonExplore}

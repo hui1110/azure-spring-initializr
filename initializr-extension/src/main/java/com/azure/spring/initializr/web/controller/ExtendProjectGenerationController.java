@@ -50,8 +50,14 @@ public class ExtendProjectGenerationController extends ProjectGenerationControll
             try {
                 GitService gitService = gitServiceFactoryResolver.resolve(request.getGitServiceType())
                                                                  .getGitService(request.getCode());
-                String gitRepositoryUrl = gitService.pushProjectToGitRepository(request, result);
-                return redirectUriString(request, ResultCode.CODE_SUCCESS.getCode(), gitRepositoryUrl);
+                if(request.getAction().equals("codespaces")) {
+                    return "redirect:" + gitService.createCodeSpaces(request, result);
+                } else if(request.getAction().equals("push")) {
+                    String gitRepositoryUrl = gitService.pushProjectToGitRepository(request, result);
+                    return redirectUriString(request, ResultCode.CODE_SUCCESS.getCode(), gitRepositoryUrl);
+                } else {
+                    throw new IllegalArgumentException(("unknown action: " + request.getAction()));
+                }
             } catch (RuntimeException exception) {
                 throw exception;
             } finally {

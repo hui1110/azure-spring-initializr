@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -27,6 +26,7 @@ public class GitHubRestClient implements GitRestClient {
     private static final String API_BASE_URI = "https://api.github.com";
     private static final String CREATE_REPO_PATH = API_BASE_URI + "/user/repos";
     private static final String GET_USER_PATH = API_BASE_URI + "/user";
+    private static final String CREATE_CODESPACE_PATH = API_BASE_URI + "/repos/%s/%s/codespaces";
     private static final String REPO_EXISTS_PATTERN = API_BASE_URI + "/repos/%s/%s";
 
     private final WebClient webClient;
@@ -106,6 +106,59 @@ public class GitHubRestClient implements GitRestClient {
         }
     }
 
+    @Override
+    public String getRepositoryId(User user, ExtendProjectRequest request) {
+        Assert.notNull(user, "Invalid user.");
+        Assert.notNull(request, "Invalid request.");
+        try {
+            GetRepository getRepository = webClient
+                    .get()
+                    .uri(String.format(
+                            REPO_EXISTS_PATTERN,
+                            user.getUsername(),
+                            request.getArtifactId()))
+                    .header("Authorization", getToken())
+                    .retrieve()
+                    .bodyToMono(GetRepository.class)
+                    .block();
+            return getRepository.getRepositoryId();
+        } catch (Exception ex) {
+            LOGGER.error("An error occurred while checking repository status.", ex);
+            throw new OAuthAppException("An error occurred while checking repository status.");
+        }
+    }
+
+    @Override
+    public String createCodespaces(User user, ExtendProjectRequest request) {
+        Assert.notNull(user, "Invalid user.");
+        Assert.notNull(request, "Invalid request.");
+        try {
+            String repositoryId = this.getRepositoryId(user, request);
+            Map<String, Object> map = new HashMap<>();
+            map.put("repository_id", Long.parseLong(repositoryId));
+            map.put("ref", "main");
+
+            CreatedCodespaces createdCodespaces =
+                    webClient
+                            .post()
+                            .uri(String.format(
+                                    CREATE_CODESPACE_PATH,
+                                    user.getUsername(),
+                                    request.getArtifactId()))
+                            .body(BodyInserters.fromValue(map))
+                            .header("Authorization", getToken())
+                            .accept(MediaType.APPLICATION_JSON)
+                            .retrieve()
+                            .bodyToMono(CreatedCodespaces.class)
+                            .block();
+
+            return createdCodespaces.getCodeSpaceUrl();
+        } catch (Exception ex) {
+            LOGGER.error("An error occurred while creating codespace.", ex);
+            throw new OAuthAppException("An error occurred while creating codespace.");
+        }
+    }
+
     private String getToken() {
         return "token " + this.accessToken;
     }
@@ -122,6 +175,36 @@ public class GitHubRestClient implements GitRestClient {
 
         public void setRepositoryUrl(String repositoryUrl) {
             this.repositoryUrl = repositoryUrl;
+        }
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    private static class GetRepository {
+
+        @JsonAlias("id")
+        private String repositoryId;
+
+        public String getRepositoryId() {
+            return repositoryId;
+        }
+
+        public void setRepositoryId(String repositoryId) {
+            this.repositoryId = repositoryId;
+        }
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    private static class CreatedCodespaces {
+
+        @JsonAlias("web_url")
+        private String codeSpaceUrl;
+
+        public String getCodeSpaceUrl() {
+            return codeSpaceUrl;
+        }
+
+        public void setCodeSpaceUrl(String codeSpaceUrl) {
+            this.codeSpaceUrl = codeSpaceUrl;
         }
     }
 }

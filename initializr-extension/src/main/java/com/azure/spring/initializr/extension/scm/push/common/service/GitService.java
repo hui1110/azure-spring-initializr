@@ -54,6 +54,13 @@ public class GitService {
         return gitRepositoryUrl;
     }
 
+    public String createCodeSpaces(ExtendProjectRequest request, ProjectGenerationResult result) {
+        User user = getUser();
+        checkRepositoryExists(user, request);
+        pushProjectToGitRepository(request, result);
+        return gitRestClient.createCodespaces(user, request);
+    }
+
     private User getUser() {
         return gitRestClient.getUser();
     }
