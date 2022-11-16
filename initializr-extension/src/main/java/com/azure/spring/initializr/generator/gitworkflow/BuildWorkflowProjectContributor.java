@@ -36,10 +36,9 @@ public class BuildWorkflowProjectContributor implements ProjectContributor {
         Resource resource = this.resolver.getResource("classpath:workflows/" + description.getBuildSystem().id() + "-build.yml");
         FileCopyUtils.copy(resource.getInputStream(), Files.newOutputStream(output, StandardOpenOption.APPEND));
 
-        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(output))) {
+        String templateYaml = Files.readString(output);
 
-            String templateYaml = Files.readString(resolver.
-                    getResource("classpath:workflows/" + description.getBuildSystem().id() + "-build.yml").getFile().toPath());
+        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(output))) {
 
             String yaml = templateYaml.replace("${push-branches}", "main")
                     .replace("${pull-request-branches}", "main")
