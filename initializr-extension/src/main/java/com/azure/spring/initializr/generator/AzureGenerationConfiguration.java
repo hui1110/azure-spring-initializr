@@ -1,5 +1,8 @@
 package com.azure.spring.initializr.generator;
 
+import com.azure.spring.initializr.generator.azd.AzdInfraProjectContributor;
+import com.azure.spring.initializr.generator.azd.AzdMetadataProjectContributor;
+import com.azure.spring.initializr.generator.azd.AzdWorkflowProjectContributor;
 import com.azure.spring.initializr.generator.codespaces.CodespacesProjectContributor;
 import com.azure.spring.initializr.generator.dependabot.GradleDependabotProjectContributor;
 import com.azure.spring.initializr.generator.dependabot.MavenDependabotProjectContributor;
@@ -16,6 +19,21 @@ public class AzureGenerationConfiguration {
     @Bean
     public CodespacesProjectContributor codespacesProjectContributor() {
         return new CodespacesProjectContributor();
+    }
+
+    @Bean
+    public AzdWorkflowProjectContributor azdWorkflowProjectContributor() {
+        return new AzdWorkflowProjectContributor();
+    }
+
+    @Bean
+    public AzdMetadataProjectContributor azdMetadataProjectContributor() {
+        return new AzdMetadataProjectContributor();
+    }
+
+    @Bean
+    public AzdInfraProjectContributor azdInfraProjectContributor() {
+        return new AzdInfraProjectContributor();
     }
 
     @Configuration
