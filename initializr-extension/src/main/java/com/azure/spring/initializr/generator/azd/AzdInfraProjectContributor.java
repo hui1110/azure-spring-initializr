@@ -5,8 +5,7 @@ import io.spring.initializr.generator.project.contributor.MultipleResourcesProje
 public class AzdInfraProjectContributor extends MultipleResourcesProjectContributor {
 
     public AzdInfraProjectContributor() {
-        super("classpath:azd-infra-bicep");
+        super("classpath:azd-infra-asa");
     }
-
 
 }
