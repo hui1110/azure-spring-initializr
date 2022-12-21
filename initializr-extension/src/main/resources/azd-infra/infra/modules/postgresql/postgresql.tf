@@ -20,12 +20,6 @@ resource "azurecaf_name" "psql" {
   clean_input   = true
 }
 
-data "azurerm_client_config" "current" {}
-
-data "azuread_user" "current_user" {
-  object_id = data.azurerm_client_config.current.object_id
-}
-
 resource "random_password" "password" {
   length           = 32
   special          = true
@@ -45,14 +39,7 @@ resource "azurerm_postgresql_flexible_server" "psqlServer" {
   storage_mb                      = 32768
 
   sku_name                        = "GP_Standard_D4s_v3"
-
-  authentication {
-    active_directory_auth_enabled = true
-    password_auth_enabled         = true
-    tenant_id                     = data.azurerm_client_config.current.tenant_id
-  }
 }
-
 
 resource "azurerm_postgresql_flexible_server_firewall_rule" "firewall_rule" {
   name                            = "AllowAllFireWallRule"
@@ -72,14 +59,5 @@ resource "azurerm_postgresql_flexible_server_configuration" "configurations" {
   name      = "azure.extensions"
   server_id = azurerm_postgresql_flexible_server.psqlServer.id
   value     = "UUID-OSSP"
-}
-
-resource "azurerm_postgresql_flexible_server_active_directory_administrator" "aad_admin" {
-  server_name         = azurerm_postgresql_flexible_server.psqlServer.name
-  resource_group_name = var.rg_name
-  tenant_id           = data.azurerm_client_config.current.tenant_id
-  object_id           = data.azurerm_client_config.current.object_id
-  principal_name      = data.azuread_user.current_user.user_principal_name
-  principal_type      = "User"
 }
 

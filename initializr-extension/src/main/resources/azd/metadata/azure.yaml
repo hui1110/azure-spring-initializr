@@ -7,4 +7,10 @@ services:
   app:
     project: ./
     language: java
-    host: springapps
+#    host: springapps
+    host: containerapp
+    infra:
+      provider: terraform
+      path: infra/app
+infra:
+  provider: terraform

@@ -1,10 +1,6 @@
-locals {
-  psql_custom_username         = "CUSTOM_ROLE"
-}
-
 resource "azapi_update_resource" "container_apps_web" {
   type        = "Microsoft.App/containerApps@2022-03-01"
-  resource_id = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/rg-${var.environment_name}/providers/Microsoft.App/containerApps/${var.name}"
+  resource_id = var.container_app_id
 
   body = jsonencode({
     properties = {
@@ -36,7 +32,8 @@ resource "azapi_update_resource" "container_apps_web" {
             env = [
               { "name" = "APPLICATIONINSIGHTS_CONNECTION_STRING", "value" = var.application_insights_connection_string },
               { "name" = "AZURE_POSTGRESQL_URL", "value" = var.psql_url },
-              { "name" = "AZURE_POSTGRESQL_USERNAME", "value" = local.psql_custom_username }
+              { "name" = "AZURE_POSTGRESQL_USERNAME", "value" = var.psql_username },
+              { "name" = "AZURE_POSTGRESQL_PASSWORD", "value" = var.psql_password }
             ]
             image = var.image_name
             name = "main"

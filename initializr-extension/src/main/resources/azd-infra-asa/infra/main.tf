@@ -79,7 +79,7 @@ module "asa_api" {
   location       = var.location
   rg_name        = azurerm_resource_group.rg.name
 
-  tags               = merge(local.tags, { azd-service-name : "api" })
+  tags               = merge(local.tags, { azd-service-name : "app" })
 
   cpu = "2"
   memory = "4Gi"

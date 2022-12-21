@@ -25,7 +25,7 @@ resource "azurerm_resource_group" "rg" {
 # Deploy application insights
 # ------------------------------------------------------------------------------------------------------
 module "applicationinsights" {
-  source           = "modules/applicationinsights"
+  source           = "./modules/applicationinsights"
   location         = var.location
   rg_name          = azurerm_resource_group.rg.name
   environment_name = var.environment_name
@@ -38,7 +38,7 @@ module "applicationinsights" {
 # Deploy log analytics
 # ------------------------------------------------------------------------------------------------------
 module "loganalytics" {
-  source         = "modules/loganalytics"
+  source         = "./modules/loganalytics"
   location       = var.location
   rg_name        = azurerm_resource_group.rg.name
   tags           = azurerm_resource_group.rg.tags
@@ -49,7 +49,7 @@ module "loganalytics" {
 # Deploy Azure PostgreSQL
 # ------------------------------------------------------------------------------------------------------
 module "postgresql" {
-  source         = "modules/postgresql"
+  source         = "./modules/postgresql"
   location       = var.location
   rg_name        = azurerm_resource_group.rg.name
   tags           = azurerm_resource_group.rg.tags
@@ -60,7 +60,7 @@ module "postgresql" {
 # Deploy Azure Container Registry
 # ------------------------------------------------------------------------------------------------------
 module "acr" {
-  source         = "modules/containerregistry"
+  source         = "./modules/containerregistry"
   location       = var.location
   rg_name        = azurerm_resource_group.rg.name
   resource_token = local.resource_token
@@ -72,7 +72,7 @@ module "acr" {
 # Deploy Azure Container Environment
 # ------------------------------------------------------------------------------------------------------
 module "container_env" {
-  source         = "modules/containerenvironment"
+  source         = "./modules/containerenvironment"
   location       = var.location
   rg_name        = azurerm_resource_group.rg.name
   resource_token = local.resource_token
@@ -88,11 +88,11 @@ module "container_env" {
 # ------------------------------------------------------------------------------------------------------
 module "container_app_app" {
   name           = "ca-api-${local.resource_token}"
-  source         = "modules/containerapps"
+  source         = "./modules/containerapps"
   location       = var.location
   rg_name        = azurerm_resource_group.rg.name
 
-  tags               = merge(local.tags, { azd-service-name : "api" })
+  tags               = merge(local.tags, { azd-service-name : "app" })
 
   container_env_id = module.container_env.CONTAINER_ENV_ID
   container_registry_pwd = module.acr.CONTAINER_REGISTRY_PASSWORD
@@ -104,7 +104,8 @@ module "container_app_app" {
   env = [
     { "name" = "APPLICATIONINSIGHTS_CONNECTION_STRING", "value" = module.applicationinsights.APPLICATIONINSIGHTS_CONNECTION_STRING },
     { "name" = "AZURE_POSTGRESQL_URL", "value" = "jdbc:postgresql://${module.postgresql.AZURE_POSTGRESQL_FQDN}:5432/${module.postgresql.AZURE_POSTGRESQL_DATABASE_NAME}?sslmode=require" },
-    { "name" = "AZURE_POSTGRESQL_USERNAME", "value" = local.psql_custom_username }
+    { "name" = "AZURE_POSTGRESQL_USERNAME", "value" = module.postgresql.AZURE_POSTGRESQL_USERNAME },
+    { "name" = "AZURE_POSTGRESQL_PASSWORD", "value" = module.postgresql.AZURE_POSTGRESQL_PASSWORD }
   ]
 
   image_name = var.image_name
@@ -113,18 +114,4 @@ module "container_app_app" {
   identity = [{
     type = "SystemAssigned"
   }]
-}
-
-
-# ------------------------------------------------------------------------------------------------------
-# Enable Passwordless for PostgreSQL
-# ------------------------------------------------------------------------------------------------------
-module "enable_passwordless" {
-  source         = "modules/passwordless"
-
-  pg_custom_role_name_with_aad_identity = local.psql_custom_username
-  pg_aad_admin_user = module.postgresql.AZURE_POSTGRESQL_ADMIN_USERNAME
-  pg_database_name = module.postgresql.AZURE_POSTGRESQL_DATABASE_NAME
-  pg_server_fqdn = module.postgresql.AZURE_POSTGRESQL_FQDN
-  app_identity_principal_id = module.container_app_app.CONTAINER_APP_NAME_IDENTITY_PRINCIPAL_ID
 }

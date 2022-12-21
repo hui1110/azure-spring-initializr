@@ -42,3 +42,18 @@ variable "psql_url" {
   description = "FDQN of PostgreSQL Server"
   type        = string
 }
+
+variable "psql_username" {
+  description = "FDQN of PostgreSQL Server"
+  type        = string
+}
+
+variable "psql_password" {
+  description = "FDQN of PostgreSQL Server"
+  type        = string
+}
+
+variable "container_app_id" {
+  description = "FDQN of PostgreSQL Server"
+  type        = string
+}

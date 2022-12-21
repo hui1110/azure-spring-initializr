@@ -13,7 +13,7 @@ output "AZURE_CONTAINER_REGISTRY_PWD" {
   sensitive = true
 }
 
-output "SERVICE_API_IMAGE_NAME" {
+output "IMAGE_NAME" {
   value = module.container_app_app.CONTAINER_APP_NAME_IMAGE_NAME
   sensitive = true
 }
@@ -46,6 +46,19 @@ output "AZURE_PSQL_URL" {
   value = module.postgresql.AZURE_POSTGRESQL_SPRING_DATASOURCE_URL
 }
 
+output "AZURE_PSQL_USERNAME" {
+  value = module.postgresql.AZURE_POSTGRESQL_USERNAME
+}
+
+output "AZURE_PSQL_PASSWORD" {
+  value = module.postgresql.AZURE_POSTGRESQL_PASSWORD
+  sensitive = true
+}
+
 output "AZURE_PSQL_CUSTOM_USERNAME" {
   value = module.postgresql.AZURE_POSTGRESQL_SPRING_DATASOURCE_URL
+}
+
+output "AZURE_CONTAINER_APP_ID" {
+  value = module.container_app_app.CONTAINER_APP_ID
 }
