@@ -9,7 +9,7 @@
       "value": "${SERVICE_API_NAME}"
     },
     "imageName": {
-      "value": "${SERVICE_API_IMAGE_NAME}"
+      "value": "${SERVICE_APP_IMAGE_NAME}"
     },
     "applicationInsightsName": {
       "value": "${APPLICATIONINSIGHTS_NAME}"
