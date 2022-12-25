@@ -11,11 +11,8 @@
     "principalId": {
       "value": "${AZURE_PRINCIPAL_ID}"
     },
-    "apiImageName": {
-      "value": "${SERVICE_API_IMAGE_NAME}"
-    },
-    "webImageName": {
-      "value": "${SERVICE_WEB_IMAGE_NAME}"
+    "appImageName": {
+      "value": "${SERVICE_APP_IMAGE_NAME}"
     },
     "sqlAdminPassword": {
       "value": "$(secretOrRandomPassword ${AZURE_KEY_VAULT_NAME} sqlAdminPassword)"

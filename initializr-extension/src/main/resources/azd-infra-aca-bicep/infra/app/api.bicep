@@ -6,13 +6,13 @@ param applicationInsightsName string
 param containerAppsEnvironmentName string
 param containerRegistryName string
 param imageName string = ''
-param keyVaultName string
 param psqlName string
 param psqlDataBaseName string
 param psqlUserName string
 @secure()
 param psqlUserPassword string
 param serviceName string = 'app'
+
 
 module app '../core/host/container-app.bicep' = {
   name: '${serviceName}-container-app-module'
@@ -26,16 +26,12 @@ module app '../core/host/container-app.bicep' = {
     containerMemory: '2.0Gi'
     env: [
       {
-        name: 'AZURE_KEY_VAULT_ENDPOINT'
-        value: keyVault.properties.vaultUri
-      }
-      {
         name: 'AZURE_POSTGRESQL_URL'
         value: 'jdbc:postgresql://${psql.properties.fullyQualifiedDomainName}:5432/${psqlDataBaseName}?sslmode=require'
       }
       {
         name: 'AZURE_POSTGRESQL_USERNAME'
-        value: psqlUserName
+        value: '${psqlUserName}@${psql.name}'
       }
       {
         name: 'AZURE_POSTGRESQL_PASSWORD'
@@ -47,17 +43,12 @@ module app '../core/host/container-app.bicep' = {
       }
     ]
     imageName: !empty(imageName) ? imageName : 'nginx:latest'
-    keyVaultName: keyVault.name
     targetPort: 3100
   }
 }
 
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing = {
   name: applicationInsightsName
-}
-
-resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
-  name: keyVaultName
 }
 
 resource psql 'Microsoft.DBforPostgreSQL/servers@2017-12-01' existing = {

@@ -6,14 +6,19 @@ param name string
 
 param location string = resourceGroup().location
 param tags object = {}
-
 param keyVaultName string
+
 
 param databaseName string = 'todo'
 
+// param serverEdition string = 'GeneralPurpose'
+// param skuSizeGB int = 128
+// param dbInstanceType string = 'Standard_D4ds_v4'
+// param version string = '10'
+
 param serverEdition string = 'GeneralPurpose'
 param dbInstanceType string = 'GP_Gen5_4'
-param version string = '14'
+param version string = '10'
 
 module psqlServer '../core/database/postgresql/postgresqlserver.bicep' = {
   name: 'psqlserver'
@@ -24,6 +29,7 @@ module psqlServer '../core/database/postgresql/postgresqlserver.bicep' = {
     databaseName: databaseName
     keyVaultName: keyVaultName
     serverEdition: serverEdition
+    // skuSizeGB: skuSizeGB
     dbInstanceType: dbInstanceType
     version: version
     sqlAdminUser: sqlAdminUser

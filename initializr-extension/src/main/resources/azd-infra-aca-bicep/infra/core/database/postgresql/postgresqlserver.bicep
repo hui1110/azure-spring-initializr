@@ -3,19 +3,19 @@ param sqlAdminUser string
 @secure()
 param sqlAdminPassword string
 
-param keyVaultName string
 param name string
 param databaseName string
 param serverEdition string
 param dbInstanceType string
 param version string
+param keyVaultName string
 
 param location string = resourceGroup().location
 param tags object = {}
 
 param connectionStringKey string = 'AZURE-PSQL-CONNECTION-STRING'
 
-resource psqlServer 'Microsoft.DBforPostgreSQL/flexibleServers@2021-06-01' = {
+resource psqlServer 'Microsoft.DBforPostgreSQL/servers@2017-12-01' = {
   name: name
   location: location
   tags: union(tags, { 'spring-cloud-azure': true })
@@ -25,24 +25,13 @@ resource psqlServer 'Microsoft.DBforPostgreSQL/flexibleServers@2021-06-01' = {
   }
   properties: {
     version: version
+    createMode: 'Default'
     administratorLogin: sqlAdminUser
     administratorLoginPassword: sqlAdminPassword
-    backup: {
-      backupRetentionDays: 7
-      geoRedundantBackup: 'Disabled'
-    }
   }
 
   resource database 'databases' = {
-    name: databaseName
-  }
-
-  resource psql_azure_extensions 'configurations' = {
-    name: 'azure.extensions'
-    properties: {
-      value: 'UUID-OSSP'
-      source: 'user-override'
-    }
+    name: 'todo'
   }
 
   resource firewall 'firewallRules' = {
@@ -53,28 +42,20 @@ resource psqlServer 'Microsoft.DBforPostgreSQL/flexibleServers@2021-06-01' = {
     }
   }
 
+  // resource psql_azure_extensions 'configurations' = {
+  //   name: 'azure.extensions'
+  //   properties: {
+  //     value: 'UUID-OSSP'
+  //     source: 'user-override'
+  //   }
+  // }
+
 }
 
 
-resource psqlConnectionStringKV 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
+resource sqlAdminPasswordSecret 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
   parent: keyVault
-  name: connectionStringKey
-  properties: {
-    value: 'jdbc:postgresql://${psqlServer.properties.fullyQualifiedDomainName}:5432/${databaseName}?sslmode=require'
-  }
-}
-
-resource psqlUserNameKV 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
-  parent: keyVault
-  name: 'AZURE-PSQL-USERNAME'
-  properties: {
-    value: sqlAdminUser
-  }
-}
-
-resource psqlPasswordKV 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
-  parent: keyVault
-  name: 'AZURE-PSQL-PASSWORD'
+  name: 'sqlAdminPassword'
   properties: {
     value: sqlAdminPassword
   }
@@ -83,7 +64,6 @@ resource psqlPasswordKV 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
   name: keyVaultName
 }
-
 
 output connectionStringKey string = connectionStringKey
 output name string = psqlServer.name

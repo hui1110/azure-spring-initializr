@@ -20,8 +20,17 @@
     "containerRegistryName": {
       "value": "${AZURE_CONTAINER_REGISTRY_NAME}"
     },
-    "keyVaultName": {
-      "value": "${AZURE_KEY_VAULT_NAME}"
+    "psqlUserName": {
+      "value": "${AZURE_PSQL_USERNAME}"
+    },
+    "psqlDataBaseName": {
+      "value": "${AZURE_PSQL_DATABASE_NAME}"
+    },
+    "psqlUserPassword": {
+      "value": "$(secretOrRandomPassword ${AZURE_KEY_VAULT_NAME} sqlAdminPassword)"
+    },
+    "psqlName": {
+      "value": "${AZURE_PSQL_NAME}"
     }
   }
 }

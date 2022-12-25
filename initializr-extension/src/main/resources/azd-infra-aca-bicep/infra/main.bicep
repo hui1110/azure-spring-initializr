@@ -11,7 +11,7 @@ param location string
 
 @secure()
 @description('PostgreSQL Server administrator password')
-param sqlAdminPassword string
+param sqlAdminPassword string = newGuid()
 
 // Optional parameters to override the default azd resource naming conventions. Update the main.parameters.json file to provide values. e.g.,:
 // "resourceGroupName": {
@@ -23,9 +23,9 @@ param applicationInsightsName string = ''
 param containerAppsEnvironmentName string = ''
 param containerRegistryName string = ''
 param psqlServerName string = ''
-param keyVaultName string = ''
 param logAnalyticsName string = ''
 param resourceGroupName string = ''
+param keyVaultName string = ''
 
 @description('Id of the user or app to assign application roles')
 param principalId string = ''
@@ -62,27 +62,16 @@ module api './app/api.bicep' = {
   name: 'app'
   scope: rg
   params: {
-    name: !empty(apiContainerAppName) ? apiContainerAppName : '${abbrs.appContainerApps}api-${resourceToken}'
+    name: !empty(apiContainerAppName) ? apiContainerAppName : '${abbrs.appContainerApps}app-${resourceToken}'
     location: location
     imageName: appImageName
     applicationInsightsName: monitoring.outputs.applicationInsightsName
     containerAppsEnvironmentName: containerApps.outputs.environmentName
     containerRegistryName: containerApps.outputs.registryName
-    keyVaultName: keyVault.outputs.name
     psqlName: psqlServer.outputs.name
     psqlDataBaseName: psqlServer.outputs.databasName
-    psqlUserName: 'azdmirole@${psqlServer.outputs.databasName}'
-    psqlUserNamePassword: 'azdmirole@${psqlServer.outputs.databasName}'
-  }
-}
-
-// Give the API access to KeyVault
-module apiKeyVaultAccess './core/security/keyvault-access.bicep' = {
-  name: 'api-keyvault-access'
-  scope: rg
-  params: {
-    keyVaultName: keyVault.outputs.name
-    principalId: api.outputs.SERVICE_API_IDENTITY_PRINCIPAL_ID
+    psqlUserName: 'sqlAdmin'
+    psqlUserPassword: sqlAdminPassword
   }
 }
 
@@ -93,6 +82,7 @@ module psqlServer './app/db.bicep' = {
   params: {
     name: !empty(psqlServerName) ? psqlServerName : '${abbrs.dBforPostgreSQLServers}${resourceToken}'
     location: location
+    sqlAdminUser: 'sqlAdmin'
     keyVaultName: keyVault.outputs.name
     sqlAdminPassword: sqlAdminPassword
     tags: tags
@@ -111,6 +101,7 @@ module keyVault './core/security/keyvault.bicep' = {
   }
 }
 
+
 // Monitor application with Azure Monitor
 module monitoring './core/monitor/monitoring.bicep' = {
   name: 'monitoring'
@@ -125,11 +116,14 @@ module monitoring './core/monitor/monitoring.bicep' = {
 }
 
 // Data outputs
-// output AZURE_COSMOS_CONNECTION_STRING_KEY string = cosmos.outputs.connectionStringKey
-// output AZURE_COSMOS_DATABASE_NAME string = cosmos.outputs.databaseName
 
 output AZURE_PSQL_DATABASE_NAME string = psqlServer.outputs.databasName
+output AZURE_PSQL_USERNAME string = 'sqlAdmin'
+output AZURE_PSQL_NAME string = psqlServer.outputs.name
+
 output AZURE_PSQL_CONNECTION_STRING_KEY string = psqlServer.outputs.connectionStringKey
+
+output AZURE_KEY_VAULT_NAME string = keyVault.outputs.name
 
 // App outputs
 output APPLICATIONINSIGHTS_CONNECTION_STRING string = monitoring.outputs.applicationInsightsConnectionString
@@ -137,8 +131,6 @@ output APPLICATIONINSIGHTS_NAME string = monitoring.outputs.applicationInsightsN
 output AZURE_CONTAINER_ENVIRONMENT_NAME string = containerApps.outputs.environmentName
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerApps.outputs.registryLoginServer
 output AZURE_CONTAINER_REGISTRY_NAME string = containerApps.outputs.registryName
-output AZURE_KEY_VAULT_ENDPOINT string = keyVault.outputs.endpoint
-output AZURE_KEY_VAULT_NAME string = keyVault.outputs.name
 output AZURE_LOCATION string = location
 output AZURE_TENANT_ID string = tenant().tenantId
 output REACT_APP_API_BASE_URL string = api.outputs.SERVICE_API_URI
