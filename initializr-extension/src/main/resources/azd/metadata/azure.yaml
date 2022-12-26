@@ -9,8 +9,8 @@ services:
     language: java
 #    host: springapps
     host: containerapp
-#    infra:
+    infra:
 #      provider: terraform
-#      path: infra/app
+      path: infra/app
 #infra:
 #  provider: terraform

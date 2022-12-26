@@ -58,7 +58,7 @@ module containerApps './core/host/container-apps.bicep' = {
 }
 
 // Api backend
-module api './app/api.bicep' = {
+module api './app/app.bicep' = {
   name: 'app'
   scope: rg
   params: {
