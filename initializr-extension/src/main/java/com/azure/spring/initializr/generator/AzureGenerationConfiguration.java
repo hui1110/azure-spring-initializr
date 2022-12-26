@@ -10,6 +10,7 @@ import com.azure.spring.initializr.generator.readme.ReadmeProjectContributor;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSystem;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
 import io.spring.initializr.generator.condition.ConditionalOnBuildSystem;
+import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,8 +39,8 @@ public class AzureGenerationConfiguration {
     }
 
     @Bean
-    public ReadmeProjectContributor readmeProjectContributor() {
-        return new ReadmeProjectContributor();
+    public ReadmeProjectContributor readmeProjectContributor(ProjectDescription projectDescription) {
+        return new ReadmeProjectContributor(projectDescription);
     }
 
     @Configuration

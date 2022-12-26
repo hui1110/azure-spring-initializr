@@ -18,6 +18,8 @@ import org.springframework.util.Assert;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 
 public class GitService {
 
@@ -47,11 +49,33 @@ public class GitService {
         User user = getUser();
         checkRepositoryExists(user, request);
         String gitRepositoryUrl = createRepository(user, request);
-        File path = new File(result.getRootDirectory().toFile().getAbsolutePath()
-                                + "/"
-                                + request.getBaseDir());
+        String projectPathName = result.getRootDirectory().toFile().getAbsolutePath()
+                                                + "/"
+                                                + request.getBaseDir();
+        File path = new File(projectPathName);
+
+        String readmeFileName = projectPathName + "/README.md";
+        boolean success = overrideReadme(readmeFileName, user);
+
         createCommitAndPush(user.getUsername(), path, gitRepositoryUrl);
+
+        if(success) {
+            // TODO if failed, convert README
+        }
         return gitRepositoryUrl;
+    }
+
+    private boolean overrideReadme(String pathName, User user) {
+        try {
+            File readmeFile = new File(pathName);
+            String oldReadmeContent = Files.readString(readmeFile.toPath());
+            String newReadmeContent = oldReadmeContent.replace("${owner}", user.getUsername());
+            Files.writeString(readmeFile.toPath(), newReadmeContent, Charset.forName("UTF-8"));
+            return true;
+        } catch (Exception e) {
+            LOGGER.error("Override readme failed: " + e.getMessage(), e);
+        }
+        return false;
     }
 
     public String createCodeSpaces(ExtendProjectRequest request, ProjectGenerationResult result) {
