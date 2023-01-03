@@ -25,6 +25,7 @@ public class ExtendProjectRequestToDescriptionConverter implements ProjectReques
         ProjectDescription description = delegate.convert(request, metadata);
         ExtendProjectDescription extendProjectDescription = new ExtendProjectDescription(description);
         extendProjectDescription.setGitServiceType(request.getGitServiceType());
+        extendProjectDescription.setArchitecture(request.getArchitecture());
         return extendProjectDescription;
     }
 

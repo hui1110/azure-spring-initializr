@@ -17,7 +17,9 @@
 package com.azure.spring.initializr.autoconfigure;
 
 import com.azure.spring.initializr.extension.dependency.springazure.*;
+import com.azure.spring.initializr.extension.dependency.springazure.architecture.TodoAppCustomizer;
 import com.azure.spring.initializr.generator.condition.ConditionalOnGitPush;
+import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.spring.documentation.HelpDocument;
 import io.spring.initializr.generator.spring.scm.git.GitIgnoreCustomizer;
@@ -68,5 +70,10 @@ public class ExtendDependencyProjectGenerationConfiguration {
 	public SpringAzureSleuthBuildCustomizer springAzureSleuthBuildCustomizer() {
 		return new SpringAzureSleuthBuildCustomizer();
 	}
+
+    @Bean
+    public TodoAppCustomizer todoAppCustomizer(ProjectDescription projectDescription) {
+        return new TodoAppCustomizer(projectDescription);
+    }
 
 }

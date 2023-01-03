@@ -22,10 +22,10 @@ extend:
       oauthapps:
         github:
           enabled: true
-          clientid: ${kv-github-client-id}
-          client-secret: ${kv-github-client-secret}
+          clientid: cf4ce948535775c3f7d7
+          client-secret: b82bcddf60bbe02583cf7b6f1205d7e724a1e459
           oauth-uri: https://github.com/login/oauth/authorize
-          redirect-uri: ${kv-github-client-redirect-uri}
+          redirect-uri: http://localhost:8080/login/oauth2/code
 
 spring:
   cloud:

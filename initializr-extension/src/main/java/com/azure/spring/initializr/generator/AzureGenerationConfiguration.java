@@ -1,5 +1,9 @@
 package com.azure.spring.initializr.generator;
 
+import com.azure.spring.initializr.generator.architecture.MicroServiceApplicationDatabasePropertiesContributor;
+import com.azure.spring.initializr.generator.architecture.MicroServiceApplicationPropertiesContributor;
+import com.azure.spring.initializr.generator.architecture.MicroServiceProjectContributor;
+import com.azure.spring.initializr.generator.architecture.MicroServiceTestProjectContributor;
 import com.azure.spring.initializr.generator.azd.AzdInfraProjectContributor;
 import com.azure.spring.initializr.generator.azd.AzdMetadataProjectContributor;
 import com.azure.spring.initializr.generator.azd.AzdWorkflowProjectContributor;
@@ -41,6 +45,21 @@ public class AzureGenerationConfiguration {
     @Bean
     public ReadmeProjectContributor readmeProjectContributor(ProjectDescription projectDescription) {
         return new ReadmeProjectContributor(projectDescription);
+    }
+
+    @Bean
+    public MicroServiceProjectContributor microServiceProjectContributor(ProjectDescription projectDescription) {
+        return new MicroServiceProjectContributor(projectDescription, "classpath:architecture/microservice/code");
+    }
+
+    @Bean
+    public MicroServiceApplicationPropertiesContributor microServiceApplicationPropertiesContributor(ProjectDescription projectDescription) {
+        return new MicroServiceApplicationPropertiesContributor(projectDescription, "src/main/resources/application.properties", "classpath:architecture/microservice/configuration/application.properties");
+    }
+
+    @Bean
+    public MicroServiceApplicationDatabasePropertiesContributor microServiceApplicationDatabasePropertiesContributor(ProjectDescription projectDescription) {
+        return new MicroServiceApplicationDatabasePropertiesContributor(projectDescription, "src/main/resources/schema-all.sql", "classpath:architecture/microservice/database/schema-all.sql");
     }
 
     @Configuration

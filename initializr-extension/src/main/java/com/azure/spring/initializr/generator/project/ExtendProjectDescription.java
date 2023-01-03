@@ -34,6 +34,7 @@ public class ExtendProjectDescription extends MutableProjectDescription {
     }
 
     private String gitServiceType;
+    private String architecture;
 
     public String getGitServiceType() {
         return gitServiceType;
@@ -41,5 +42,13 @@ public class ExtendProjectDescription extends MutableProjectDescription {
 
     public void setGitServiceType(String gitServiceType) {
         this.gitServiceType = gitServiceType;
+    }
+
+    public String getArchitecture() {
+        return architecture;
+    }
+
+    public void setArchitecture(String architecture) {
+        this.architecture = architecture;
     }
 }
