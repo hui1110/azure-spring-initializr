@@ -1,0 +1,33 @@
+name: Maven Build And Deploy to Azure Spring Apps With Artifact
+on: push
+env:
+  ASC_PACKAGE_PATH: ${{ github.workspace }}
+  AZURE_SUBSCRIPTION: 799c12ba-353c-44a1-883d-84808ebb2216
+
+jobs:
+  maven_build_and_deploy_to_azure_spring_apps_with_artifact:
+    runs-on: ubuntu-latest
+    name: Maven Build And Deploy to Azure Spring Apps With Artifact
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'microsoft'
+          cache: maven
+      - name: Build with Maven
+        run: mvn -B clean package --file pom.xml
+      - name: Login via Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: deploy to production with artifact
+        uses: azure/spring-cloud-deploy@v1
+        with:
+          azure-subscription: ${{ env.AZURE_SUBSCRIPTION }}
+          action: Deploy
+          service-name: <service instance name>
+          app-name: <app name>
+          use-staging-deployment: false
+          package: ${{ env.ASC_PACKAGE_PATH }}/**/*.jar
