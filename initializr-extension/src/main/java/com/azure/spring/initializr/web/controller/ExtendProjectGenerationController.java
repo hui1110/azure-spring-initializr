@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ExtendProjectGenerationController extends ProjectGenerationController<ExtendProjectRequest> {
@@ -89,7 +91,11 @@ public class ExtendProjectGenerationController extends ProjectGenerationControll
                     .queryParam("description", request.getDescription())
                     .queryParam("packageName", request.getPackageName())
                     .queryParam("platformVersion", request.getBootVersion())
-                    .queryParam("jvmVersion", request.getJavaVersion());
+                    .queryParam("jvmVersion", request.getJavaVersion())
+                    .queryParam("fromSpringInitializr", request.getFromSpringInitializr());
+            if (!request.getDependencies().isEmpty()) {
+                uriComponentsBuilder.queryParam("dependencies", String.join(",", request.getDependencies()));
+            }
         }
         return "redirect:/#!" + uriComponentsBuilder.toUriString();
     }
@@ -103,7 +109,13 @@ public class ExtendProjectGenerationController extends ProjectGenerationControll
             map.put(name, httpServletRequest.getParameter(name));
         }
         ObjectMapper mapper = new ObjectMapper();
+        String stringDependencies = String.valueOf(map.get("dependencies"));
+        map.remove("dependencies");
         ExtendProjectRequest request = mapper.convertValue(map, ExtendProjectRequest.class);
+        if (!"null".equals(stringDependencies)) {
+            List<String> dependencies = Arrays.asList(stringDependencies.split(","));
+            request.setDependencies(dependencies);
+        }
         String errorCode = ResultCode.CODE_SUCCESS.getCode();
         if (ex instanceof IllegalArgumentException) {
             errorCode = ResultCode.INVALID_PARAM.getCode();

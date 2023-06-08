@@ -16,25 +16,21 @@
 
 package io.spring.start.site;
 
-import java.io.IOException;
-import java.nio.file.Files;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.spring.initializr.versionresolver.DependencyManagementVersionResolver;
 import io.spring.initializr.web.autoconfigure.InitializrAutoConfiguration;
 import io.spring.start.site.project.ProjectDescriptionCustomizerConfiguration;
 import io.spring.start.site.support.CacheableDependencyManagementVersionResolver;
-import io.spring.start.site.support.StartInitializrMetadataUpdateStrategy;
 import io.spring.start.site.web.HomeController;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableAsync;
+
+import java.io.IOException;
+import java.nio.file.Files;
 
 /**
  * Initializr website application.
@@ -58,8 +54,7 @@ public class StartApplication {
 	}
 
 	@Bean
-	public DependencyManagementVersionResolver dependencyManagementVersionResolver()
-			throws IOException {
+	public DependencyManagementVersionResolver dependencyManagementVersionResolver() throws IOException {
 		return new CacheableDependencyManagementVersionResolver(
 				DependencyManagementVersionResolver.withCacheLocation( Files.createTempDirectory("version-resolver-cache-")));
 	}

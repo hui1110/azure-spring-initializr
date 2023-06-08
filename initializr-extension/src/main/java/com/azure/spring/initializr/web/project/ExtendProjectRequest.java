@@ -13,6 +13,7 @@ public class ExtendProjectRequest extends WebProjectRequest {
     private String code;
     private String gitServiceType;
     private String action;
+    private String fromSpringInitializr;
 
     public String getArchitecture() {
         return architecture;
@@ -53,4 +54,14 @@ public class ExtendProjectRequest extends WebProjectRequest {
     public void setAction(String action) {
         this.action = action;
     }
+
+    public String getFromSpringInitializr() {
+        return fromSpringInitializr;
+    }
+
+    public void setFromSpringInitializr(String fromSpringInitializr) {
+        this.fromSpringInitializr = fromSpringInitializr;
+    }
+
+
 }

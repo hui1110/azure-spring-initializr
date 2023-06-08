@@ -20,6 +20,7 @@ import { Form } from './common/form'
 import { Header, SideLeft, SideRight } from './common/layout'
 import { InitializrContext } from './reducer/Initializr'
 import { getConfig, getInfo, getProject, getGitParams } from './utils/ApiUtils'
+import queryString from "query-string";
 
 const Explore = lazy(() => import('./common/explore/Explore.js'))
 const Share = lazy(() => import('./common/share/Share.js'))
@@ -38,6 +39,78 @@ export default function Application() {
   const { values, share, git, dispatch: dispatchInitializr } = useContext(
     InitializrContext
   )
+
+  useEffect(async () => {
+    const params = queryString.parse(`?${location.hash.substring(2)}`)
+    const code = params['?errorcode'] || params.errorcode || null;
+    const msg = params['?msg'] || params.msg || null;
+    const fromSpringInitializr = params['?fromSpringInitializr'] || params.fromSpringInitializr || null;
+    if (fromSpringInitializr === 'push') {
+      location.assign("https://start.spring.io?code=" + code + "&msg=" + msg)
+    } else if (fromSpringInitializr === 'explore') {
+      const dependenciesString = params['?dependencies'] || params.dependencies || null;
+      const dependenciesList = dependenciesString === null ? [] : dependenciesString.split(',');
+      const args = {
+        architecture: params['?architecture'] || params.architecture || 'none',
+        project: params['?type'] || params.type,
+        language: params['?language'] || params.language,
+        boot: params['?platformVersion'] || params.platformVersion,
+        meta: {
+          name: params['?name'] || params.name,
+          group: params['?groupId'] || params.groupId,
+          artifact: params['?artifactId'] || params.artifactId,
+          description: params['?description'] || params.description,
+          packaging: params['?packaging'] || params.packaging,
+          packageName: params['?packageName'] || params.packageName,
+          java: params['?jvmVersion'] || params.jvmVersion,
+        },
+        dependencies: dependenciesList,
+      }
+
+      let groupData = [];
+      const fetchDependenciesMetadata = async () => {
+        const url = `${windowsUtils.origin}/metadata/client`
+        const response = await fetch(url);
+        const data = await response.json();
+        groupData = data.dependencies.values;
+      }
+      await fetchDependenciesMetadata()
+
+      let dependencies = {
+        list: [],
+        groups: [],
+      }
+      let groups = [];
+      let lists = [];
+
+      if (groupData !== undefined && groupData.length !== 0) {
+        for (let i = 0; i < groupData.length; i++) {
+          const item = {
+            group: groupData[i].name,
+            items: groupData[i].values,
+          }
+          groups.push(item);
+          lists.push.apply(lists, groupData[i].values)
+        }
+      }
+      dependencies.groups = groups;
+      dependencies.list = lists;
+
+      const explore = async () => {
+        const url = `${windowsUtils.origin}/starter.zip`
+        dispatch({type: 'UPDATE', payload: {explore: true, list: false}})
+        const project = await getProject(
+            url,
+            args,
+            get(dependencies, 'list')
+        ).catch(() => {
+          toast.error(`Could not connect to server. Please check your network.`)
+        })
+        setBlob(project)
+      }
+      explore()
+    }
+  }, [])
 
   const [blob, setBlob] = useState(null)
   const [generating, setGenerating] = useState(false)

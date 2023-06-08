@@ -22,8 +22,8 @@ extend:
       oauthapps:
         github:
           enabled: true
-          clientid: cf4ce948535775c3f7d7
-          client-secret: b82bcddf60bbe02583cf7b6f1205d7e724a1e459
+          clientid: 27c83ffc0f8fd2a9859b
+          client-secret: aed126a9b6c3941f3a4768b2f37c6df810fcbb74
           oauth-uri: https://github.com/login/oauth/authorize
           redirect-uri: http://localhost:8080/login/oauth2/code
 
